@@ -1202,6 +1202,9 @@ function validate(){
 }
 function stamp(){const now=new Date();$('#lastMod').textContent=`Last modified on ${now.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})} by you`;}
 const fmtShort=m=>{m=((m%1440)+1440)%1440;let h=Math.floor(m/60),mm=m%60,ap=h<12?'AM':'PM';h=h%12||12;return mm?`${h}:${String(mm).padStart(2,'0')} ${ap}`:`${h} ${ap}`;};
+function renderSumDate(){const s=toMin($('#start').value),e=s+(+$('#durH').value||0)*60+(+$('#durM').value||0);
+  const ds=$('#date').value?new Date($('#date').value+'T12:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'}):'No date';
+  $('#sumDate').innerHTML=`${ds} &nbsp;•&nbsp; ${fmtShort(s)} – ${fmtShort(e)}`;}
 $('#save').addEventListener('click',()=>{
   if(!validate())return;
   const b=$('#save');b.disabled=true;b.innerHTML='<span class="spinner"></span>Saving';
@@ -1209,9 +1212,7 @@ $('#save').addEventListener('click',()=>{
     /* The header reflects saved values, so it updates on save */
     $('#sumTitle').textContent=$('#eventName').value.trim();
     savedFormat=form.format.value;renderSumFormat();
-    const s=toMin($('#start').value),e=s+(+$('#durH').value||0)*60+(+$('#durM').value||0);
-    const ds=new Date($('#date').value+'T12:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
-    $('#sumDate').innerHTML=`${ds} &nbsp;•&nbsp; ${fmtShort(s)} – ${fmtShort(e)}`;
+    renderSumDate();
     stamp();toast('Event settings saved');},700);
 });
 document.addEventListener('keydown',e=>{if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='s'){e.preventDefault();$('#save').click();}});
@@ -1297,7 +1298,7 @@ addEventListener('scroll',spy,{passive:true});
 addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(h==='details')showView('details');else if(spyMap[h]){$('#'+h).scrollIntoView();setActive(spyMap[h]);}});
 
 /* ---------- Init ---------- */
-renderFields();renderWaivers();renderFiles();renderStatus();renderSumFormat();sync();
+renderFields();renderWaivers();renderFiles();renderStatus();renderSumFormat();sync();renderSumDate();
 const h=location.hash.slice(1);if(spyMap[h]){setTimeout(()=>{$('#'+h).scrollIntoView();setActive(spyMap[h]);},60);}else setActive('overview');
 })();
 </script>
